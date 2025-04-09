@@ -20,4 +20,8 @@ public class Product
   [ForeignKey(nameof(Category))]
   public int CategoryId { get; set; }
   public Category Category { get; set; } = null!;
+  public int StockQuantity { get; set; }
+  
+  public ICollection<ProductReview> ProductReviews { get; set; } = new List<ProductReview>();
+  public ICollection<PriceHistory> PriceHistory { get; set; } = new List<PriceHistory>();
 }
