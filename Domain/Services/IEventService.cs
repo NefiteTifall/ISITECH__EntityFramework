@@ -1,4 +1,6 @@
-﻿using ISITECH__EventsArea.Domain.Entities;
+﻿// Domain/Services/IEventService.cs
+using ISITECH__EventsArea.API.DTO;
+using ISITECH__EventsArea.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -7,9 +9,9 @@ namespace ISITECH__EventsArea.Domain.Services
 {
 	public interface IEventService
 	{
-		Task<Event> GetEventByIdAsync(int id);
-		Task<IEnumerable<Event>> GetAllEventsAsync();
-		Task<(IEnumerable<Event> Events, int TotalCount)> GetFilteredEventsAsync(
+		Task<EventDto> GetEventByIdAsync(int id);
+		Task<IEnumerable<EventDto>> GetAllEventsAsync();
+		Task<(IEnumerable<EventDto> Events, int TotalCount)> GetFilteredEventsAsync(
 			DateTime? startDate, 
 			DateTime? endDate, 
 			int? categoryId, 
@@ -18,8 +20,8 @@ namespace ISITECH__EventsArea.Domain.Services
 			string searchTerm,
 			int pageIndex, 
 			int pageSize);
-		Task<Event> CreateEventAsync(Event eventEntity);
-		Task UpdateEventAsync(Event eventEntity);
+		Task<EventDto> CreateEventAsync(EventCreateUpdateDto eventDto);
+		Task UpdateEventAsync(EventCreateUpdateDto eventDto);
 		Task DeleteEventAsync(int id);
 		Task<bool> EventExistsAsync(int id);
 	}
