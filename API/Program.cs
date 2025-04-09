@@ -1,7 +1,10 @@
 using ISITECH__EventsArea;
 using ISITECH__EventsArea.Infrastructure.Data;
 using ISITECH__EventsArea.Domain.Entities;
+using ISITECH__EventsArea.Domain.Services;
+using ISITECH__EventsArea.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,10 +14,18 @@ builder.Services.AddDbContext<EventsAreasDbContext>(options =>
 	options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddControllers();
+
+// 
+builder.Services.AddRouting(options =>
+{
+	options.LowercaseUrls = true;
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Services
+builder.Services.AddScoped<IEventService, EventService>();
 
 var app = builder.Build();
 
