@@ -9,6 +9,7 @@ namespace ISITECH__EventsArea.Domain.Services
 {
 	public interface IEventService
 	{
+		Task<Event> GetEventEntityByIdAsync(int id);
 		Task<EventDto> GetEventByIdAsync(int id);
 		Task<IEnumerable<EventDto>> GetAllEventsAsync();
 		Task<(IEnumerable<EventDto> Events, int TotalCount)> GetFilteredEventsAsync(
@@ -17,11 +18,11 @@ namespace ISITECH__EventsArea.Domain.Services
 			int? categoryId, 
 			int? locationId, 
 			EventStatus? status, 
-			string searchTerm,
+			string? searchTerm,
 			int pageIndex, 
 			int pageSize);
-		Task<EventDto> CreateEventAsync(EventCreateUpdateDto eventDto);
-		Task UpdateEventAsync(EventCreateUpdateDto eventDto);
+		Task<EventDto> CreateEventAsync(EventCreateDto eventDto);
+		Task PatchEventAsync(int id, EventPatchDto eventDto);
 		Task DeleteEventAsync(int id);
 		Task<bool> EventExistsAsync(int id);
 	}

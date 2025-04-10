@@ -1,4 +1,5 @@
 // API/Program.cs
+
 using ISITECH__EventsArea.Domain.Interfaces;
 using ISITECH__EventsArea.Domain.Services;
 using ISITECH__EventsArea.Infrastructure.Data;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using AutoMapper;
 using ISITECH__EventsArea.API.Mapping;
+using ISITECH__EventsArea.Infrastructure.Data.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,16 +32,10 @@ builder.Services.AddScoped<IEventService, EventService>();
 
 // Controllers
 builder.Services.AddControllers()
-	.AddJsonOptions(options =>
-	{
-		options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-	});
+	.AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
 // Routes
-builder.Services.AddRouting(options =>
-{
-	options.LowercaseUrls = true;
-});
+builder.Services.AddRouting(options => { options.LowercaseUrls = true; });
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -58,5 +54,26 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+if (app.Environment.IsDevelopment())
+{
+	using (var scope = app.Services.CreateScope())
+	{
+		var services = scope.ServiceProvider;
+		var context = services.GetRequiredService<EventsAreasDbContext>();
+
+		try
+		{
+			await EventsAreaSeeder.SeedAsync(context);
+		}
+		catch (Exception ex)
+		{
+			var logger = services.GetRequiredService<ILogger<Program>>();
+			logger.LogError(ex, "Une erreur s'est produite lors de l'initialisation de la base de données.");
+		}
+	}
+}
+
+app.Run();
 
 app.Run();

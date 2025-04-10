@@ -29,7 +29,7 @@ namespace ISITECH__EventsArea.API.Controllers
 			[FromQuery] int? categoryId,
 			[FromQuery] int? locationId,
 			[FromQuery] EventStatus? status,
-			[FromQuery] string searchTerm,
+			[FromQuery] string? searchTerm,
 			[FromQuery] int pageIndex = 1,
 			[FromQuery] int pageSize = 10)
 		{
@@ -59,7 +59,7 @@ namespace ISITECH__EventsArea.API.Controllers
 
 		// POST: api/Events
 		[HttpPost]
-		public async Task<ActionResult<EventDto>> CreateEvent(EventCreateUpdateDto eventDto)
+		public async Task<ActionResult<EventDto>> CreateEvent(EventCreateDto eventDto)
 		{
 			try
 			{
@@ -73,35 +73,45 @@ namespace ISITECH__EventsArea.API.Controllers
 		}
 
 		// PUT: api/Events/5
-		[HttpPut("{id}")]
-		public async Task<IActionResult> UpdateEvent(int id, EventCreateUpdateDto eventDto)
+		[HttpPatch("{id}")]
+		public async Task<IActionResult> PatchEvent(int? id, [FromBody] EventPatchDto patchDto)
 		{
-			if (id != eventDto.Id)
+			if (patchDto == null)
 			{
-				return BadRequest("L'ID dans l'URL ne correspond pas à l'ID dans les données.");
+				return BadRequest("Les données de mise à jour sont requises");
 			}
 
-			var exists = await _eventService.EventExistsAsync(id);
-
-			if (!exists)
+			int eventId;
+			if (id.HasValue && id.Value > 0)
 			{
-				return NotFound();
+				// Utiliser l'ID de la route
+				eventId = id.Value;
+			}
+			else if (patchDto.Id.HasValue && patchDto.Id.Value > 0)
+			{
+				// Utiliser l'ID du body si l'ID de la route n'est pas fourni
+				eventId = patchDto.Id.Value;
+			}
+			else
+			{
+				return BadRequest("Un ID valide doit être fourni dans l'URL ou dans le corps de la requête");
 			}
 
 			try
 			{
-				await _eventService.UpdateEventAsync(eventDto);
+				await _eventService.PatchEventAsync(eventId, patchDto);
 				return NoContent();
+			}
+			catch (KeyNotFoundException)
+			{
+				return NotFound();
 			}
 			catch (ArgumentException ex)
 			{
 				return BadRequest(ex.Message);
 			}
-			catch (KeyNotFoundException ex)
-			{
-				return NotFound(ex.Message);
-			}
 		}
+
 
 		// DELETE: api/Events/5
 		[HttpDelete("{id}")]

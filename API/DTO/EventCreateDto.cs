@@ -3,7 +3,7 @@ using ISITECH__EventsArea.Domain.Entities;
 
 namespace ISITECH__EventsArea.API.DTO
 {
-	public class EventCreateUpdateDto
+	public class EventCreateDto
 	{
 		public int? Id { get; set; }
 

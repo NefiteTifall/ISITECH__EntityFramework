@@ -21,6 +21,11 @@ namespace ISITECH__EventsArea.Application.Services
             _mapper = mapper;
         }
 
+        public async Task<Event> GetEventEntityByIdAsync(int id)
+        {
+            return await _unitOfWork.Events.GetEventWithDetailsAsync(id);
+        }
+
         public async Task<EventDto> GetEventByIdAsync(int id)
         {
             var eventEntity = await _unitOfWork.Events.GetEventWithDetailsAsync(id);
@@ -51,7 +56,7 @@ namespace ISITECH__EventsArea.Application.Services
             return (dtos, result.TotalCount);
         }
 
-        public async Task<EventDto> CreateEventAsync(EventCreateUpdateDto eventDto)
+        public async Task<EventDto> CreateEventAsync(EventCreateDto eventDto)
         {
             if (eventDto.EndDate <= eventDto.StartDate)
             {
@@ -67,27 +72,54 @@ namespace ISITECH__EventsArea.Application.Services
             return _mapper.Map<EventDto>(createdEvent);
         }
 
-        public async Task UpdateEventAsync(EventCreateUpdateDto eventDto)
+        public async Task PatchEventAsync(int id, EventPatchDto patchDto)
         {
-            if (eventDto.EndDate <= eventDto.StartDate)
+            var existingEvent = await _unitOfWork.Events.GetByIdAsync(id);
+            if (existingEvent == null)
+            {
+                throw new KeyNotFoundException($"Événement avec l'ID {id} non trouvé.");
+            }
+
+            // Appliquer les modifications seulement si non null
+            if (patchDto.Title != null)
+                existingEvent.Title = patchDto.Title;
+    
+            if (patchDto.Description != null)
+                existingEvent.Description = patchDto.Description;
+    
+            if (patchDto.StartDate.HasValue)
+                existingEvent.StartDate = patchDto.StartDate.Value;
+    
+            if (patchDto.EndDate.HasValue)
+                existingEvent.EndDate = patchDto.EndDate.Value;
+    
+            if (patchDto.Status.HasValue)
+                existingEvent.Status = patchDto.Status.Value;
+    
+            if (patchDto.CategoryId.HasValue)
+                existingEvent.CategoryId = patchDto.CategoryId.Value;
+    
+            if (patchDto.LocationId.HasValue)
+                existingEvent.LocationId = patchDto.LocationId.Value;
+
+            // Validation métier
+            if (existingEvent.EndDate <= existingEvent.StartDate)
             {
                 throw new ArgumentException("La date de fin doit être postérieure à la date de début");
             }
 
-            // Vérifier si l'ID est présent
-            if (!eventDto.Id.HasValue)
-            {
-                throw new ArgumentException("L'ID de l'événement doit être spécifié pour la mise à jour");
-            }
-
-            var existingEvent = await _unitOfWork.Events.GetByIdAsync(eventDto.Id.Value);
-            if (existingEvent == null)
-            {
-                throw new KeyNotFoundException($"Événement avec l'ID {eventDto.Id.Value} non trouvé.");
-            }
-
-            _mapper.Map(eventDto, existingEvent);
             _unitOfWork.Events.Update(existingEvent);
+            await _unitOfWork.CompleteAsync();
+        }
+        
+        public async Task UpdateEventEntityAsync(Event eventEntity)
+        {
+            if (eventEntity.EndDate <= eventEntity.StartDate)
+            {
+                throw new ArgumentException("La date de fin doit être postérieure à la date de début");
+            }
+
+            _unitOfWork.Events.Update(eventEntity);
             await _unitOfWork.CompleteAsync();
         }
 
