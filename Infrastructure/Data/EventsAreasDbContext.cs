@@ -137,6 +137,15 @@ namespace ISITECH__EventsArea.Infrastructure.Data
                 .Property(r => r.Score)
                 .IsRequired()
                 .HasColumnType("smallint");
+            
+            modelBuilder.Entity<Event>().HasQueryFilter(e => true).HasIndex(e => e.Id);
+            modelBuilder.Entity<EventCategory>().HasQueryFilter(e => true).HasIndex(e => e.Id);
+            modelBuilder.Entity<Participant>().HasQueryFilter(e => true).HasIndex(e => e.Id);
+            modelBuilder.Entity<Speaker>().HasQueryFilter(e => true).HasIndex(e => e.Id);
+            modelBuilder.Entity<Session>().HasQueryFilter(e => true).HasIndex(e => e.Id);
+            modelBuilder.Entity<Location>().HasQueryFilter(e => true).HasIndex(e => e.Id);
+            modelBuilder.Entity<Room>().HasQueryFilter(e => true).HasIndex(e => e.Id);
+            modelBuilder.Entity<Rating>().HasQueryFilter(e => true).HasIndex(e => e.Id);
         }
     }
 }

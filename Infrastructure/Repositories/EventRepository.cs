@@ -27,6 +27,7 @@ namespace ISITECH__EventsArea.Infrastructure.Repositories
         {
             return await _entities
                 .Where(e => e.CategoryId == categoryId)
+                .OrderBy(e => e.Id)
                 .ToListAsync();
         }
 
@@ -34,6 +35,7 @@ namespace ISITECH__EventsArea.Infrastructure.Repositories
         {
             return await _entities
                 .Where(e => e.StartDate >= startDate && e.EndDate <= endDate)
+                .OrderBy(e => e.Id)
                 .ToListAsync();
         }
 
@@ -41,6 +43,7 @@ namespace ISITECH__EventsArea.Infrastructure.Repositories
         {
             return await _entities
                 .Where(e => e.Status == status)
+                .OrderBy(e => e.Id)
                 .ToListAsync();
         }
 

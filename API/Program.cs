@@ -31,17 +31,22 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEventService, EventService>();
 
 // Controllers
-builder.Services.AddControllers()
+builder.Services.AddControllers(options => options.Filters.Add<ModelStateValidationFilter>())
 	.AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+
 
 // Routes
 builder.Services.AddRouting(options => { options.LowercaseUrls = true; });
+
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// Middleware
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure HTTP pipeline
 if (app.Environment.IsDevelopment())
