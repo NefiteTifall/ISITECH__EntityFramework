@@ -29,6 +29,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Services
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IEventCategoryService, EventCategoryService>();
 
 // Controllers
 builder.Services.AddControllers(options => options.Filters.Add<ModelStateValidationFilter>())
@@ -78,7 +79,5 @@ if (app.Environment.IsDevelopment())
 		}
 	}
 }
-
-app.Run();
 
 app.Run();
